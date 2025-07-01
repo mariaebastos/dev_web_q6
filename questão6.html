@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>COVID-19 - Países</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: #fff;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #0077cc;
+      color: white;
+    }
+
+    tr.brasil {
+      background-color: #fffdc4;
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .erro {
+      text-align: center;
+      margin-top: 20px;
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>COVID-19 - Dados por País</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>País</th>
+        <th>Confirmados</th>
+        <th>Mortes</th>
+        <th>Recuperados</th>
+      </tr>
+    </thead>
+    <tbody id="tabela-paises">
+      <tr><td colspan="4">Carregando dados...</td></tr>
+    </tbody>
+  </table>
+  <div class="erro" id="erro"></div>
+
+  <script>
+    const tabela = document.getElementById("tabela-paises");
+    const erro = document.getElementById("erro");
+
+    fetch("https://covid19-brazil-api.now.sh/api/report/v1/countries")
+      .then(response => response.json())
+      .then(dados => {
+        tabela.innerHTML = ""; 
+        const paises = dados.data;
+
+        paises.forEach(pais => {
+          const tr = document.createElement("tr");
+          if (pais.country.toLowerCase() === "brazil") {
+            tr.classList.add("brasil");
+          }
+
+          tr.innerHTML = `
+            <td>${pais.country}</td>
+            <td>${pais.cases.toLocaleString()}</td>
+            <td>${pais.deaths.toLocaleString()}</td>
+            <td>${pais.recovered.toLocaleString()}</td>
+          `;
+          tabela.appendChild(tr);
+        });
+      })
+      .catch(() => {
+        tabela.innerHTML = "";
+        erro.textContent = "Erro ao carregar os dados da API.";
+      });
+  </script>
+</body>
+</html>
+
